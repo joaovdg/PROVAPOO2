@@ -1,0 +1,46 @@
+// schema.prisma
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id         Int      @id @default(autoincrement())
+  nome       String
+  email      String   @unique
+  lances     Lance[]
+  leiloesDono Leilao[]
+}
+
+model Lance {
+  id           Int      @id @default(autoincrement())
+  valor        Float
+  comprador    Usuario  @relation(fields: [compradorId], references: [id])
+  compradorId  Int
+  leilao       Leilao   @relation(fields: [leilaoId], references: [id])
+  leilaoId     Int
+}
+
+model Leilao {
+  id          Int      @id @default(autoincrement())
+  produto     String
+  preco       Float
+  dataLimite  DateTime
+  dono        Usuario  @relation(fields: [donoId], references: [id])
+  donoId      Int
+  lances      Lance[]
+}
+
+model Job {
+  id               Int      @id @default(autoincrement())
+  // Adicione este campo se o método `FecharLeilao` precisa retornar um valor
+  fechamentoValor  Float?
+
+  @@map("jobs")
+}
